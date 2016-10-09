@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Project.Service.VehicleRepository>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Manufacturer @Html.DisplayNameFor(Model => Model.vehicleMake.Name)
+            
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.vehicleModel.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.vehicleModel.Abrv)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.vehicleMake.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.vehicleModel.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.vehicleModel.Abrv)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.vehicleModel.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.vehicleModel.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.vehicleModel.Id })
+        </td>
+    </tr>
+}
+
+</table>
