@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.Service
 {
-    public class VehicleService : VehicleInterface
+    public class VehicleService
     {
-        private static VehicleContext db = new VehicleContext();
         private static VehicleService instance = null;
 
         private VehicleService() { }
@@ -19,46 +19,58 @@ namespace Project.Service
                 instance = new VehicleService();
             return instance;
         }
-        public void Add(VehicleModel vehicleModel, VehicleMake vehicleMake)
+
+
+        public void Add(VehicleModel vehicleModel)
         {
-            if (FindVehicleMakesByName(vehicleMake.Name) == null)
-            {
-                db.VehicleMakes.Add(vehicleMake);
-            }   
-            
+            VehicleContext db = new VehicleContext();
             db.VehicleModels.Add(vehicleModel);
             db.SaveChanges();
         }
 
-        public void Add(VehicleModel vehicleModel)
+        public void Add(VehicleMake vehicleMake)
         {
-            db.VehicleModels.Add(vehicleModel);
+            VehicleContext db = new VehicleContext();
+            db.VehicleMakes.Add(vehicleMake);
             db.SaveChanges();
         }
 
         public void Edit(VehicleModel vehicleModel)
         {
-            db.Entry(vehicleModel).State = System.Data.Entity.EntityState.Modified;            
+            VehicleContext db = new VehicleContext();
+            db.Entry(vehicleModel).State = EntityState.Modified;
+            db.SaveChanges();
         }
 
-        public VehicleModel FindById(int Id)
+        public void Edit(VehicleMake vehicleMake)
         {
+            VehicleContext db = new VehicleContext();
+            db.Entry(vehicleMake).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+
+        public VehicleModel FindByIdModel(int? Id)
+        {
+            VehicleContext db = new VehicleContext();
             var result = (from r in db.VehicleModels where r.Id == Id select r).FirstOrDefault();
             return result;
         }
-        public VehicleMake FindByIdMake(int Id)
+        public VehicleMake FindByIdMake(int? Id)
         {
+            VehicleContext db = new VehicleContext();
             var result = (from r in db.VehicleMakes where r.Id == Id select r).FirstOrDefault();
             return result;
         }
 
         public VehicleMake FindVehicleMakesByName(string Name)
         {
+            VehicleContext db = new VehicleContext();
             return (from r in db.VehicleMakes where r.Name.ToUpper() == Name.ToUpper() select r).FirstOrDefault();
         }
 
         public IEnumerable GetVehicles()
         {
+            VehicleContext db = new VehicleContext();
             List<VehicleRepository> vehicleRepository = new List<VehicleRepository>();
 
             foreach(var temp in db.VehicleModels)
@@ -69,11 +81,36 @@ namespace Project.Service
             return vehicleRepository;
         }
 
-        public void Remove(int Id)
+        public void RemoveModel(int? Id)
         {
+            VehicleContext db = new VehicleContext();
             VehicleModel vm = db.VehicleModels.Find(Id);
             db.VehicleModels.Remove(vm);
             db.SaveChanges();
+        }
+
+        public bool RemoveMake(int? Id)
+        {
+            VehicleContext db = new VehicleContext();
+            VehicleMake vm = db.VehicleMakes.Find(Id);
+
+            var result = (from r in db.VehicleModels where r.Id == Id select r).FirstOrDefault();
+
+            if(result == null)
+            {
+                db.VehicleMakes.Remove(vm);
+                db.SaveChanges();
+                return true;
+            }
+
+            return false;
+                                       
+        }
+
+        public List<VehicleMake> GetAllVehicleMakers()
+        {
+            VehicleContext db = new VehicleContext();
+            return db.VehicleMakes.ToList();
         }
 
     }

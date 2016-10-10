@@ -54,7 +54,6 @@
     <Compile Include="VehicleInitializer.cs" />
     <Compile Include="VehicleMake.cs" />
     <Compile Include="VehicleModel.cs" />
-    <Compile Include="Interfaces\VehicleInterface.cs" />
     <Compile Include="VehicleRepository.cs" />
     <Compile Include="VehicleService.cs" />
   </ItemGroup>
