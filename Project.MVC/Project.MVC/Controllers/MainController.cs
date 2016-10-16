@@ -134,7 +134,7 @@ namespace Project.MVC.Controllers
 
         public ActionResult Create()
         {
-            ViewBag.List = vehicleService.GetAllVehicleMakers();
+            //ViewBag.List = vehicleService.GetAllVehicleMakers();
             return View();
         }
 

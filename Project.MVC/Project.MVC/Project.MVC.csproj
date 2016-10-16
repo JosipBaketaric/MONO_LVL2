@@ -130,6 +130,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\MakeController.cs" />
+    <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -178,6 +180,10 @@
     <Content Include="Views\Main\DeleteMake.cshtml" />
     <Content Include="Views\Main\DeleteFailed.cshtml" />
     <Content Include="Views\Main\Create.cshtml" />
+    <Content Include="Views\Make\Index.cshtml" />
+    <Content Include="Views\Model\Index.cshtml" />
+    <Content Include="Views\Make\Add.cshtml" />
+    <Content Include="Views\Model\Add.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

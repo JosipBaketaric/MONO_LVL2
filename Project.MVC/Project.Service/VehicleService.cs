@@ -11,7 +11,7 @@ namespace Project.Service
     public class VehicleService
     {
         private static VehicleService instance = null;
-
+        
         private VehicleService() { }
         public static VehicleService GetInstance()
         {
@@ -62,12 +62,13 @@ namespace Project.Service
             return result;
         }
 
+        //Delete
         public VehicleMake FindVehicleMakesByName(string Name)
         {
             VehicleContext db = new VehicleContext();
             return (from r in db.VehicleMakes where r.Name.ToUpper() == Name.ToUpper() select r).FirstOrDefault();
         }
-
+        //Model + Make
         public IEnumerable GetVehicles()
         {
             VehicleContext db = new VehicleContext();
@@ -79,6 +80,20 @@ namespace Project.Service
             }
 
             return vehicleRepository;
+        }
+
+        public IEnumerable GetVehicleModels()
+        {
+            VehicleContext db = new VehicleContext();
+            IEnumerable<VehicleModel> vehicleModelList = db.VehicleModels.ToList();
+            return vehicleModelList;
+        }
+
+        public IEnumerable GetVehicleMakes()
+        {
+            VehicleContext db = new VehicleContext();
+            IEnumerable<VehicleMake> vehicleMakesList = db.VehicleMakes.ToList();
+            return vehicleMakesList;
         }
 
         public void RemoveModel(int? Id)
@@ -105,12 +120,6 @@ namespace Project.Service
 
             return false;
                                        
-        }
-
-        public List<VehicleMake> GetAllVehicleMakers()
-        {
-            VehicleContext db = new VehicleContext();
-            return db.VehicleMakes.ToList();
         }
 
     }
