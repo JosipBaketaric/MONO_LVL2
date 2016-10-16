@@ -111,5 +111,45 @@ namespace Project.Service
                                        
         }
 
+        public IEnumerable<VehicleMake> filterMake(string search)
+        {
+            if (search == null)
+                return null;
+
+            VehicleContext db = new VehicleContext();
+            IEnumerable<VehicleMake> vehicleMakesList;
+
+            if (search.Equals(""))
+            {
+                vehicleMakesList = db.VehicleMakes.ToList();
+                return vehicleMakesList;
+            }
+
+
+            vehicleMakesList = db.VehicleMakes.Where(x => x.Name.StartsWith(search)).ToList();
+
+            return vehicleMakesList;
+        }
+
+        public IEnumerable<VehicleModel> filterModel(string search)
+        {
+            if (search == null)
+                return null;
+
+            VehicleContext db = new VehicleContext();
+            IEnumerable<VehicleModel> vehicleModelList;
+
+            if (search.Equals(""))
+            {
+                vehicleModelList = db.VehicleModels.ToList();
+                return vehicleModelList;
+            }
+
+
+            vehicleModelList = db.VehicleModels.Where(x => x.Name.StartsWith(search)).ToList();
+
+            return vehicleModelList;
+        }
+
     }
 }
