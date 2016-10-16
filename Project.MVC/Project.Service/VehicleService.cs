@@ -5,12 +5,15 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PagedList;
+using PagedList.Mvc;
 
 namespace Project.Service
 {
     public class VehicleService
     {
         private static VehicleService instance = null;
+        private const int PAGE_SIZE = 5;
         
         private VehicleService() { }
         public static VehicleService GetInstance()
@@ -71,17 +74,83 @@ namespace Project.Service
             return result;
         }     
 
-        public IEnumerable GetVehicleModels()
+        public IEnumerable GetVehicleModels(string search, int? page, string sortBy)
         {
             VehicleContext db = new VehicleContext();
-            IEnumerable<VehicleModel> vehicleModelList = db.VehicleModels.ToList();
-            return vehicleModelList;
+            IEnumerable returnValue;
+
+            var Models = db.VehicleModels.AsQueryable();             
+
+            if (search == null || search.Equals(""))
+            {
+                Models = db.VehicleModels.AsQueryable();
+            }
+            else
+            {
+                Models = db.VehicleModels.Where(x => x.Name.StartsWith(search)).AsQueryable();
+            }
+
+            switch (sortBy)
+            {
+                case "Name desc":
+                    returnValue = Models.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                case "Id desc":
+                    returnValue = Models.OrderByDescending(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                case "Name":
+                    returnValue = Models.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                default:
+                    returnValue = Models.OrderBy(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+            }
+
+            return returnValue;
         }
 
-        public IEnumerable GetVehicleMakes()
+        //PAGING AND SEARCH
+        public IEnumerable GetVehicleMakes(string search, int? page, string sortBy)
         {
             VehicleContext db = new VehicleContext();
-            IEnumerable<VehicleMake> vehicleMakesList = db.VehicleMakes.ToList();
+            IEnumerable returnValue;
+
+            var Makes = db.VehicleMakes.AsQueryable();
+
+            if (search == null || search.Equals(""))
+            {
+                Makes = db.VehicleMakes.AsQueryable();
+            }
+            else
+            {
+                Makes = db.VehicleMakes.Where(x => x.Name.StartsWith(search)).AsQueryable();
+            }
+
+            switch (sortBy)
+            {
+                case "Name desc":
+                    returnValue = Makes.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                case "Id desc":
+                    returnValue = Makes.OrderByDescending(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                case "Name":
+                    returnValue = Makes.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                default:
+                    returnValue = Makes.OrderBy(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+            }
+
+            return returnValue;
+        }
+
+        //NOT PAGED
+        public IEnumerable GetVehicleMakesAll()
+        {
+            VehicleContext db = new VehicleContext();
+            IEnumerable<VehicleMake> vehicleMakesList;
+            vehicleMakesList = db.VehicleMakes.ToList();
             return vehicleMakesList;
         }
 
@@ -96,7 +165,7 @@ namespace Project.Service
         public bool RemoveMake(int? Id)
         {
             VehicleContext db = new VehicleContext();
-            VehicleMake vm = FindByIdMake(Id);
+            VehicleMake vm = db.VehicleMakes.Find(Id);
 
             var result = (from r in db.VehicleModels where r.MakeId == Id select r).FirstOrDefault();
 
@@ -109,46 +178,6 @@ namespace Project.Service
 
             return false;
                                        
-        }
-
-        public IEnumerable<VehicleMake> filterMake(string search)
-        {
-            if (search == null)
-                return null;
-
-            VehicleContext db = new VehicleContext();
-            IEnumerable<VehicleMake> vehicleMakesList;
-
-            if (search.Equals(""))
-            {
-                vehicleMakesList = db.VehicleMakes.ToList();
-                return vehicleMakesList;
-            }
-
-
-            vehicleMakesList = db.VehicleMakes.Where(x => x.Name.StartsWith(search)).ToList();
-
-            return vehicleMakesList;
-        }
-
-        public IEnumerable<VehicleModel> filterModel(string search)
-        {
-            if (search == null)
-                return null;
-
-            VehicleContext db = new VehicleContext();
-            IEnumerable<VehicleModel> vehicleModelList;
-
-            if (search.Equals(""))
-            {
-                vehicleModelList = db.VehicleModels.ToList();
-                return vehicleModelList;
-            }
-
-
-            vehicleModelList = db.VehicleModels.Where(x => x.Name.StartsWith(search)).ToList();
-
-            return vehicleModelList;
         }
 
     }
