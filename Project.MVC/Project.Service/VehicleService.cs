@@ -21,11 +21,20 @@ namespace Project.Service
         }
 
 
-        public void Add(VehicleModel vehicleModel)
+        public bool Add(VehicleModel vehicleModel)
         {
             VehicleContext db = new VehicleContext();
-            db.VehicleModels.Add(vehicleModel);
-            db.SaveChanges();
+
+            var result = (from r in db.VehicleMakes where r.Id == vehicleModel.MakeId select r).FirstOrDefault();
+
+            if(result != null)
+            {
+                db.VehicleModels.Add(vehicleModel);
+                db.SaveChanges();
+                return true;
+            }
+
+            return false;        
         }
 
         public void Add(VehicleMake vehicleMake)
@@ -60,27 +69,7 @@ namespace Project.Service
             VehicleContext db = new VehicleContext();
             var result = (from r in db.VehicleMakes where r.Id == Id select r).FirstOrDefault();
             return result;
-        }
-
-        //Delete
-        public VehicleMake FindVehicleMakesByName(string Name)
-        {
-            VehicleContext db = new VehicleContext();
-            return (from r in db.VehicleMakes where r.Name.ToUpper() == Name.ToUpper() select r).FirstOrDefault();
-        }
-        //Model + Make
-        public IEnumerable GetVehicles()
-        {
-            VehicleContext db = new VehicleContext();
-            List<VehicleRepository> vehicleRepository = new List<VehicleRepository>();
-
-            foreach(var temp in db.VehicleModels)
-            {
-                vehicleRepository.Add( new VehicleRepository { vehicleModel = temp, vehicleMake = FindByIdMake(temp.MakeId) } );
-            }
-
-            return vehicleRepository;
-        }
+        }     
 
         public IEnumerable GetVehicleModels()
         {
@@ -107,9 +96,9 @@ namespace Project.Service
         public bool RemoveMake(int? Id)
         {
             VehicleContext db = new VehicleContext();
-            VehicleMake vm = db.VehicleMakes.Find(Id);
+            VehicleMake vm = FindByIdMake(Id);
 
-            var result = (from r in db.VehicleModels where r.Id == Id select r).FirstOrDefault();
+            var result = (from r in db.VehicleModels where r.MakeId == Id select r).FirstOrDefault();
 
             if(result == null)
             {
