@@ -1,0 +1,69 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<Project.Service.VehicleModel>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Vehicle models database</h2>
+
+<br /> <br />
+
+@if (ViewBag.Error != null)
+{
+    <h3>@ViewBag.Error</h3>
+    <br /><br />
+}
+
+<p>
+    
+    @using (Html.BeginForm("Index", "Model", FormMethod.Get))
+    {
+        @Html.ActionLink("Add", "Add")
+        <span class="pull-right">  @Html.TextBox("search") <input type="submit" value="Search" />   </span>
+    }
+</p>
+
+<table class="table">
+
+    <tr>
+        <th>@Html.ActionLink("Id", "Index", new { search = Request.QueryString["search"], sortBy = ViewBag.SortByIdParameter } )</th>
+        <th>@Html.ActionLink("Name", "Index", new { search = Request.QueryString["search"], sortBy = ViewBag.SortByNameParameter })</th>
+        <th>@Html.ActionLink("Maker Name", "Index", new { search = Request.QueryString["search"], sortBy = ViewBag.SortByMakerNameParameter })</th>
+        <th>@Html.DisplayNameFor(Model => Model.First().Abrv)</th>
+        <th></th>
+    </tr>
+
+    @if (Model.Count() == 0)
+    {
+        <tr>
+            <td colspan="4">No entries</td>
+        </tr>
+    }
+    else
+    {
+        foreach (var vehicle in Model)
+        {
+            <tr>
+                <td>@vehicle.VehicleModelId.ToString()</td>
+                <td>@vehicle.Name</td>
+                <td> @vehicle.VehicleMake.Name </td>
+                <td>@vehicle.Abrv</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = vehicle.VehicleModelId }) |
+                    @Html.ActionLink("Details", "Details", new { id = vehicle.VehicleModelId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = vehicle.VehicleModelId })
+                </td>
+            </tr>
+        }
+    }  
+
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = Request.QueryString["search"], sortBy = Request["sortBy"] }), 
+    new PagedListRenderOptions() {Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true } )
+
+<br /><br />
+@Html.ActionLink("Go to Vehicle makers database", "Index", "Make")
+
