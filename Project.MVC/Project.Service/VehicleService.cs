@@ -102,8 +102,6 @@ namespace Project.Service
                 case "Name":
                     returnValue = Models.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
-
-                    //Models.VehicleMake == null !!!!! to je FKEY
                 case "MakerName":
                     returnValue = Models.OrderBy(x => x.VehicleMake.Name ).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
