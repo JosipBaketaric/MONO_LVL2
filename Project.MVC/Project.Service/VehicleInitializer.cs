@@ -23,9 +23,9 @@ namespace Project.Service
 
             var VehicleModel = new List<VehicleModel>
             {
-                new VehicleModel {Name = "R8", MakeId = 1, Abrv = "r8" },
-                new VehicleModel {Name = "GTR", MakeId = 6, Abrv = "gtr" },
-                new VehicleModel {Name = "f80", MakeId = 1, Abrv = "Enzo" }
+                new VehicleModel {Name = "R8", VehicleMakeId = 1, Abrv = "r8" },
+                new VehicleModel {Name = "GTR", VehicleMakeId = 6, Abrv = "gtr" },
+                new VehicleModel {Name = "f80", VehicleMakeId = 1, Abrv = "Enzo" }
             };
 
             foreach (var Make in VehicleMake)
@@ -39,6 +39,7 @@ namespace Project.Service
             }
 
             context.SaveChanges();
+            base.Seed(context);
         }
     }
 }

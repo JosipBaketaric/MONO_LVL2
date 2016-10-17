@@ -28,7 +28,7 @@ namespace Project.Service
         {
             VehicleContext db = new VehicleContext();
 
-            var result = (from r in db.VehicleMakes where r.Id == vehicleModel.MakeId select r).FirstOrDefault();
+            var result = (from r in db.VehicleMakes where r.VehicleMakeId == vehicleModel.VehicleMakeId select r).FirstOrDefault();
 
             if(result != null)
             {
@@ -64,13 +64,13 @@ namespace Project.Service
         public VehicleModel FindByIdModel(int? Id)
         {
             VehicleContext db = new VehicleContext();
-            var result = (from r in db.VehicleModels where r.Id == Id select r).FirstOrDefault();
+            var result = (from r in db.VehicleModels where r.VehicleModelId == Id select r).FirstOrDefault();
             return result;
         }
         public VehicleMake FindByIdMake(int? Id)
         {
             VehicleContext db = new VehicleContext();
-            var result = (from r in db.VehicleMakes where r.Id == Id select r).FirstOrDefault();
+            var result = (from r in db.VehicleMakes where r.VehicleMakeId == Id select r).FirstOrDefault();
             return result;
         }     
 
@@ -78,6 +78,7 @@ namespace Project.Service
         {
             VehicleContext db = new VehicleContext();
             IEnumerable returnValue;
+            List<VehicleMake> vehicleMakersList = db.VehicleMakes.ToList();
 
             var Models = db.VehicleModels.AsQueryable();             
 
@@ -96,13 +97,22 @@ namespace Project.Service
                     returnValue = Models.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Id desc":
-                    returnValue = Models.OrderByDescending(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderByDescending(x => x.VehicleModelId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Name":
                     returnValue = Models.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
+
+                    //Models.VehicleMake == null !!!!! to je FKEY
+                case "MakerName":
+                    returnValue = Models.OrderBy(x => x.VehicleMake.Name ).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+                case "MakerName desc":
+                    returnValue = Models.OrderByDescending(x => x.VehicleMake.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    break;
+
                 default:
-                    returnValue = Models.OrderBy(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderBy(x => x.VehicleModelId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
             }
 
@@ -132,13 +142,13 @@ namespace Project.Service
                     returnValue = Makes.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Id desc":
-                    returnValue = Makes.OrderByDescending(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderByDescending(x => x.VehicleMakeId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Name":
                     returnValue = Makes.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 default:
-                    returnValue = Makes.OrderBy(x => x.Id).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderBy(x => x.VehicleMakeId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
             }
 
@@ -167,7 +177,7 @@ namespace Project.Service
             VehicleContext db = new VehicleContext();
             VehicleMake vm = db.VehicleMakes.Find(Id);
 
-            var result = (from r in db.VehicleModels where r.MakeId == Id select r).FirstOrDefault();
+            var result = (from r in db.VehicleModels where r.VehicleMakeId == Id select r).FirstOrDefault();
 
             if(result == null)
             {

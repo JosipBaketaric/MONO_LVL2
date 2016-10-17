@@ -9,7 +9,12 @@ namespace Project.Service
 {
     public class VehicleContext : DbContext
     {
+        public VehicleContext() : base("VehicleDB")
+        {
+        }
+
         public DbSet<VehicleMake> VehicleMakes { get; set; }
-        public DbSet<VehicleModel> VehicleModels { get; set; }
+        public DbSet<VehicleModel> VehicleModels { get; set; }   
+
     }
 }
