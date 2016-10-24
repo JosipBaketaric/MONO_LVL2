@@ -13,9 +13,12 @@ namespace Project.Service
     public class VehicleService
     {
         private static VehicleService instance = null;
+        private VehicleContext db;
         private const int PAGE_SIZE = 5;
         
-        private VehicleService() { }
+        private VehicleService() {
+            this.db = new VehicleContext();
+        }
         public static VehicleService GetInstance()
         {
             if (instance == null)
@@ -26,14 +29,12 @@ namespace Project.Service
 
         public bool Add(VehicleModel vehicleModel)
         {
-            VehicleContext db = new VehicleContext();
-
-            var result = (from r in db.VehicleMakes where r.VehicleMakeId == vehicleModel.VehicleMakeId select r).FirstOrDefault();
+            var result = (from r in this.db.VehicleMakes where r.VehicleMakeId == vehicleModel.VehicleMakeId select r).FirstOrDefault();
 
             if(result != null)
             {
-                db.VehicleModels.Add(vehicleModel);
-                db.SaveChanges();
+                this.db.VehicleModels.Add(vehicleModel);
+                this.db.SaveChanges();
                 return true;
             }
 
@@ -42,75 +43,69 @@ namespace Project.Service
 
         public void Add(VehicleMake vehicleMake)
         {
-            VehicleContext db = new VehicleContext();
-            db.VehicleMakes.Add(vehicleMake);
-            db.SaveChanges();
+            this.db.VehicleMakes.Add(vehicleMake);
+            this.db.SaveChanges();
         }
 
         public void Edit(VehicleModel vehicleModel)
         {
-            VehicleContext db = new VehicleContext();
-            db.Entry(vehicleModel).State = EntityState.Modified;
-            db.SaveChanges();
+            this.db.Entry(vehicleModel).State = EntityState.Modified;
+            this.db.SaveChanges();
         }
 
         public void Edit(VehicleMake vehicleMake)
         {
-            VehicleContext db = new VehicleContext();
-            db.Entry(vehicleMake).State = EntityState.Modified;
-            db.SaveChanges();
+            this.db.Entry(vehicleMake).State = EntityState.Modified;
+            this.db.SaveChanges();
         }
 
         public VehicleModel FindByIdModel(int? Id)
         {
-            VehicleContext db = new VehicleContext();
-            var result = (from r in db.VehicleModels where r.VehicleModelId == Id select r).FirstOrDefault();
+            var result = (from r in this.db.VehicleModels where r.VehicleModelId == Id select r).FirstOrDefault();
             return result;
         }
         public VehicleMake FindByIdMake(int? Id)
         {
-            VehicleContext db = new VehicleContext();
-            var result = (from r in db.VehicleMakes where r.VehicleMakeId == Id select r).FirstOrDefault();
+            var result = (from r in this.db.VehicleMakes where r.VehicleMakeId == Id select r).FirstOrDefault();
             return result;
         }     
 
         public IEnumerable GetVehicleModels(string search, int? page, string sortBy)
         {
-            VehicleContext db = new VehicleContext();
             IEnumerable returnValue;
-            List<VehicleMake> vehicleMakersList = db.VehicleMakes.ToList();
+            List<VehicleMake> vehicleMakersList = this.db.VehicleMakes.ToList();
 
-            var Models = db.VehicleModels.AsQueryable();             
+            var Models = this.db.VehicleModels.AsQueryable();             
 
             if (search == null || search.Equals(""))
             {
-                Models = db.VehicleModels.AsQueryable();
+                Models = this.db.VehicleModels.AsQueryable();
             }
             else
             {
-                Models = db.VehicleModels.Where(x => x.Name.StartsWith(search)).AsQueryable();
+                Models = this.db.VehicleModels.Where(x => x.Name.StartsWith(search)).AsQueryable();
             }
 
             switch (sortBy)
             {
                 case "Name desc":
-                    returnValue = Models.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderByDescending(x => x.Name).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Id desc":
-                    returnValue = Models.OrderByDescending(x => x.VehicleModelId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderByDescending(x => x.VehicleModelId).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Name":
-                    returnValue = Models.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderBy(x => x.Name).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "MakerName":
-                    returnValue = Models.OrderBy(x => x.VehicleMake.Name ).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderBy(x => x.VehicleMake.Name ).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "MakerName desc":
-                    returnValue = Models.OrderByDescending(x => x.VehicleMake.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderByDescending(x => x.VehicleMake.Name).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
 
                 default:
-                    returnValue = Models.OrderBy(x => x.VehicleModelId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Models.OrderBy(x => x.VehicleModelId).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
             }
 
@@ -120,33 +115,32 @@ namespace Project.Service
         //PAGING AND SEARCH
         public IEnumerable GetVehicleMakes(string search, int? page, string sortBy)
         {
-            VehicleContext db = new VehicleContext();
             IEnumerable returnValue;
 
-            var Makes = db.VehicleMakes.AsQueryable();
+            var Makes = this.db.VehicleMakes.AsQueryable();
 
             if (search == null || search.Equals(""))
             {
-                Makes = db.VehicleMakes.AsQueryable();
+                Makes = this.db.VehicleMakes.AsQueryable();
             }
             else
             {
-                Makes = db.VehicleMakes.Where(x => x.Name.StartsWith(search)).AsQueryable();
+                Makes = this.db.VehicleMakes.Where(x => x.Name.StartsWith(search)).AsQueryable();
             }
 
             switch (sortBy)
             {
                 case "Name desc":
-                    returnValue = Makes.OrderByDescending(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderByDescending(x => x.Name).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Id desc":
-                    returnValue = Makes.OrderByDescending(x => x.VehicleMakeId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderByDescending(x => x.VehicleMakeId).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 case "Name":
-                    returnValue = Makes.OrderBy(x => x.Name).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderBy(x => x.Name).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
                 default:
-                    returnValue = Makes.OrderBy(x => x.VehicleMakeId).ToList().ToPagedList(page ?? 1, PAGE_SIZE);
+                    returnValue = Makes.OrderBy(x => x.VehicleMakeId).ToPagedList(page ?? 1, PAGE_SIZE);
                     break;
             }
 
@@ -156,31 +150,28 @@ namespace Project.Service
         //NOT PAGED
         public IEnumerable GetVehicleMakesAll()
         {
-            VehicleContext db = new VehicleContext();
             IEnumerable<VehicleMake> vehicleMakesList;
-            vehicleMakesList = db.VehicleMakes.ToList();
+            vehicleMakesList = this.db.VehicleMakes.ToList();
             return vehicleMakesList;
         }
 
         public void RemoveModel(int? Id)
         {
-            VehicleContext db = new VehicleContext();
-            VehicleModel vm = db.VehicleModels.Find(Id);
-            db.VehicleModels.Remove(vm);
-            db.SaveChanges();
+            VehicleModel vm = this.db.VehicleModels.Find(Id);
+            this.db.VehicleModels.Remove(vm);
+            this.db.SaveChanges();
         }
 
         public bool RemoveMake(int? Id)
         {
-            VehicleContext db = new VehicleContext();
-            VehicleMake vm = db.VehicleMakes.Find(Id);
+            VehicleMake vm = this.db.VehicleMakes.Find(Id);
 
-            var result = (from r in db.VehicleModels where r.VehicleMakeId == Id select r).FirstOrDefault();
+            var result = (from r in this.db.VehicleModels where r.VehicleMakeId == Id select r).FirstOrDefault();
 
             if(result == null)
             {
-                db.VehicleMakes.Remove(vm);
-                db.SaveChanges();
+                this.db.VehicleMakes.Remove(vm);
+                this.db.SaveChanges();
                 return true;
             }
 
