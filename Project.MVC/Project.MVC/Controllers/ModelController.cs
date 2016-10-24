@@ -10,8 +10,13 @@ namespace Project.MVC.Controllers
 {
     public class ModelController : Controller
     {
-        private VehicleService vehicleService = VehicleService.GetInstance();
+        private VehicleService vehicleService;
         // GET: Model
+
+        public ModelController()
+        {
+            this.vehicleService = VehicleService.GetInstance();
+        }
         public ActionResult Index(string search, int? page, string sortBy)
         {
             ViewBag.SortByIdParameter = string.IsNullOrEmpty(sortBy) ? "Id desc" : "";
@@ -19,13 +24,13 @@ namespace Project.MVC.Controllers
             ViewBag.SortByMakerNameParameter = sortBy == "MakerName" ? "MakerName desc" : "MakerName";
 
 
-            return View( vehicleService.GetVehicleModels(search, page, sortBy) );
+            return View(this.vehicleService.GetVehicleModels(search, page, sortBy) );
         }
 
 
         public ActionResult Add()
         {
-            ViewBag.VehicleMakersList = vehicleService.GetVehicleMakesAll();
+            ViewBag.VehicleMakersList = this.vehicleService.GetVehicleMakesAll();
             return View();
         }
 
@@ -35,12 +40,12 @@ namespace Project.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                if( vehicleService.Add(vehicleModel) )
+                if(this.vehicleService.Add(vehicleModel) )
                     return RedirectToAction("Index");
                 else
                 {
                     ViewBag.Error = "Couldn't add model. There is no such maker.";
-                    return View("Index", vehicleService.GetVehicleModels("", 1, "") );
+                    return View("Index", this.vehicleService.GetVehicleModels("", 1, "") );
                 }
             }
             return View(vehicleModel);
@@ -51,12 +56,12 @@ namespace Project.MVC.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            VehicleModel vehicleModel = vehicleService.FindByIdModel(id);
+            VehicleModel vehicleModel = this.vehicleService.FindByIdModel(id);
 
             if (vehicleModel == null)
                 return HttpNotFound();
 
-            ViewBag.VehicleMakersList = vehicleService.GetVehicleMakesAll();
+            ViewBag.VehicleMakersList = this.vehicleService.GetVehicleMakesAll();
 
             return View(vehicleModel);
         }
@@ -67,7 +72,7 @@ namespace Project.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                vehicleService.Edit(vehicleModel);
+                this.vehicleService.Edit(vehicleModel);
                 return RedirectToAction("Index");
             }
 
@@ -79,7 +84,7 @@ namespace Project.MVC.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            VehicleModel vehicleModel = vehicleService.FindByIdModel(id);
+            VehicleModel vehicleModel = this.vehicleService.FindByIdModel(id);
 
             if (vehicleModel == null)
                 return HttpNotFound();
@@ -94,14 +99,14 @@ namespace Project.MVC.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(vehicleService.FindByIdModel(id));
+            return View(this.vehicleService.FindByIdModel(id));
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteModelConfirmed(int id)
         {
-            vehicleService.RemoveModel(id);
+            this.vehicleService.RemoveModel(id);
             return RedirectToAction("Index");
         }
 

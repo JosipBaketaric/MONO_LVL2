@@ -10,15 +10,20 @@ namespace Project.MVC.Controllers
 {
     public class MakeController : Controller
     {
-        private VehicleService vehicleService = VehicleService.GetInstance();
+        private VehicleService vehicleService;
         // GET: Make
+
+            public MakeController()
+        {
+            this.vehicleService = VehicleService.GetInstance();
+        }
 
         public ActionResult Index(string search, int? page, string sortBy)
         {
             ViewBag.SortByIdParameter = string.IsNullOrEmpty(sortBy) ? "Id desc" : "";
             ViewBag.SortByNameParameter = sortBy == "Name" ? "Name desc" : "Name";
 
-            return View( vehicleService.GetVehicleMakes(search, page, sortBy) );
+            return View(this.vehicleService.GetVehicleMakes(search, page, sortBy) );
         }
 
         public ActionResult Add()
@@ -32,8 +37,8 @@ namespace Project.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                vehicleService.Add(vehicleMake);
-                return RedirectToAction("Index");
+                this.vehicleService.Add(vehicleMake);
+                return RedirectToAction("Index");                
             }
             return View(vehicleMake);
         }
@@ -43,7 +48,7 @@ namespace Project.MVC.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            VehicleMake vehicleMake = vehicleService.FindByIdMake(id);
+            VehicleMake vehicleMake = this.vehicleService.FindByIdMake(id);
 
             if (vehicleMake == null)
                 return HttpNotFound();
@@ -57,7 +62,7 @@ namespace Project.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                vehicleService.Edit(vehicleMake);
+                this.vehicleService.Edit(vehicleMake);
                 return RedirectToAction("Index");
             }
 
@@ -69,7 +74,7 @@ namespace Project.MVC.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            VehicleMake vehicleMake = vehicleService.FindByIdMake(id);
+            VehicleMake vehicleMake = this.vehicleService.FindByIdMake(id);
 
             if (vehicleMake == null)
                 return HttpNotFound();
@@ -84,17 +89,17 @@ namespace Project.MVC.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(vehicleService.FindByIdMake(id));
+            return View(this.vehicleService.FindByIdMake(id));
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if ( vehicleService.RemoveMake(id) == true )
+            if (this.vehicleService.RemoveMake(id) == true )
                 return RedirectToAction("Index");
             ViewBag.Error = "Couldn't delete make. There are stil models that are using it.";
-            return View("Index", vehicleService.GetVehicleMakes("",1, "") );
+            return View("Index", this.vehicleService.GetVehicleMakes("",1, "") );
         }
 
     }
